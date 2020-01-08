@@ -1,3 +1,18 @@
 <h2 id="title">Welcome to Ember</h2>
 
-{{outlet}}
+<div>
+  <button type="button" {{on "click" this.toggleShowCount}}>
+    Show Count
+  </button>
+</div>
+
+<div>
+  <button type="button" {{on "click" this.decreaseInterval}}>Faster ++</button>
+  <button type="button" {{on "click" this.increaseInterval}}>Slower --</button>
+</div>
+
+<div>
+  {{#if this.showCount}}
+    <Counter @interval={{this.interval}}/>
+  {{/if}}
+</div>
