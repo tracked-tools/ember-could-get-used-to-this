@@ -1,33 +1,30 @@
-import Ember from 'ember';
+import { defineProperty, computed } from '@ember/object';
+import { dependentKeyCompat } from '@ember/object/compat';
 
-const {
-  value: getTagSnapshot,
-  validate: validateTagSnapshot,
-  // createTag,
-} = Ember.__loader.require('@glimmer/reference');
+class Runner {
+  _validFlag = false;
 
-const {
-  track: trackComputation,
-  consume: consumeTag,
-} = Ember.__loader.require('@ember/-internals/metal');
+  @computed('watcher')
+  get runner() {
+    return this.watcher;
+  }
 
+  @computed('watcher')
+  get _isValid() {
+    return this._validFlag = !this._validFlag;
+  }
 
-export function memoComputation(fn) {
-  let tag;
-  let snapshot;
-
-  return () => {
-    if (!tag || !validateTagSnapshot(tag, snapshot)) {
-      tag = trackComputation(fn);
-      snapshot = getTagSnapshot(tag);
-    }
-
-    consumeTag(tag);
-  };
+  isValid() {
+    let pre = this._validFlag;
+    this._isValid;
+    return this._validFlag === pre;
+  }
 }
 
-export {
-  trackComputation,
-  getTagSnapshot,
-  validateTagSnapshot,
-};
+export function memoComputation(fn) {
+  let obj = new Runner();
+
+  defineProperty(obj, 'watcher', dependentKeyCompat({ get: fn }));
+
+  return () => obj.runner;
+}
