@@ -16,47 +16,63 @@ export function setUsableManager(obj, manager) {
   USABLE_MANAGERS.set(obj, manager);
 }
 
+function getUsableManagerFactory(_obj) {
+  let obj = _obj;
+  let factory;
+
+  while (obj !== null) {
+    factory = USABLE_MANAGERS.get(obj);
+
+    if (factory === undefined) {
+      obj = Object.getPrototypeOf(obj);
+    } else {
+      break;
+    }
+  }
+
+  return factory;
+}
+
 function getUsableManager(obj, owner) {
   let managers = USABLE_MANAGER_INSTANCES.get(owner);
-  let creator = USABLE_MANAGERS.get(obj);
+  let factory = getUsableManagerFactory(obj);
+
+  if (factory === undefined) {
+    return;
+  }
 
   if (managers === undefined) {
     managers = new WeakMap();
     USABLE_MANAGER_INSTANCES.set(owner, managers);
   }
 
-  let manager = managers.get(creator);
+  let manager = managers.get(factory);
 
   if (manager === undefined) {
-    manager = creator(owner);
-    managers.set(creator, manager);
+    manager = factory(owner);
+    managers.set(factory, manager);
   }
 
   return manager;
 }
 
-export function createResource(context, _definitionThunk) {
-  let definitionThunk;
-
-  if (typeof _definitionThunk === 'object') {
-    _definitionThunk.isStatic = true;
-
-    definitionThunk = () => _definitionThunk;
-  } else {
-    definitionThunk = _definitionThunk;
-  }
-
-  let manager, instance, destroyed = false;
-
+function createUsable(context, definitionOrThunk) {
+  let instance;
+  let destroyed = false;
   let owner = getOwner(context);
 
-  let createOrUpdate = memoComputation(() => {
-    let definition = definitionThunk();
+  let manager = getUsableManager(definitionOrThunk, owner);
+  let isStatic = manager !== undefined;
 
-    manager = getUsableManager(definition.usable, owner);
+  let createOrUpdate = memoComputation(() => {
+    let definition = isStatic ? definitionOrThunk : definitionOrThunk();
+
+    if (manager === undefined) {
+      manager = getUsableManager(definition, owner);
+    }
 
     if (!instance) {
-      instance = manager.createUsable(context, definition.usable);
+      instance = manager.createUsable(context, definition, isStatic);
       manager.setupUsable(instance, definition);
     } else {
       manager.updateUsable(instance, definition);
@@ -92,7 +108,7 @@ export function createResource(context, _definitionThunk) {
 
 export function use(prototypeOrThis, keyOrDef, desc) {
   if (typeof keyOrDef === 'function' || typeof keyOrDef === 'object') {
-    return createResource(prototypeOrThis, keyOrDef);
+    return createUsable(prototypeOrThis, keyOrDef);
   }
 
   let resources = new WeakMap();
@@ -103,7 +119,7 @@ export function use(prototypeOrThis, keyOrDef, desc) {
       let resource = resources.get(this);
 
       if (!resource) {
-        resource = createResource(this, initializer.bind(this));
+        resource = createUsable(this, initializer.bind(this));
         resources.set(this, resource);
       }
 

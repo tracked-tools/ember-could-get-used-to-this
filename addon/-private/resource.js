@@ -3,11 +3,11 @@ import { assert } from '@ember/debug';
 import { setUsableManager } from './use';
 import { destroy } from './destroyable';
 
-const ARGS_MESSAGE = `When creating resources directly with \`use(this, myResource())\`, you must provide a function that retrieves arguments rather than the arguments themselves. This allows resources to autotrack and update the arguments. The return value of this function must be an array of arguments.
+const ARGS_MESSAGE = `When creating resources directly with \`use(this, myResource())\`, you must provide a function that retrieves arguments rather than the arguments themselves. This allows resources to autotrack and update the arguments. The return value of this function may be an array of arguments or a single argument value.
 
   BAD: \`use(this, myResource(this.args.someDynamicValue)\`
 
-  BAD: \`use(this, myResource(() => this.args.someDynamicValue))\`
+  Good: \`use(this, myResource(() => this.args.someDynamicValue))\`
 
   GOOD: \`use(this, myResource(() => [this.args.someDynamicValue]))\`
 `
@@ -21,7 +21,9 @@ function reifyArgs(args, isStatic) {
     if (getArgs !== undefined) {
       args = getArgs();
 
-      assert(ARGS_MESSAGE, Array.isArray(args));
+      if (!Array.isArray(args)) {
+        args = [args];
+      }
     }
   }
 
@@ -33,33 +35,33 @@ class ResourceManager {
     this.owner = owner;
   }
 
-  createUsable(context, Resource) {
+  createUsable(context, { Resource }, isStatic) {
     let instance = new Resource(this.owner);
 
     setOwner(instance, this.owner);
 
-    return { instance, usable: Resource };
+    return { instance, Resource, isStatic };
   }
 
   getState({ instance }) {
     return instance.state;
   }
 
-  setupUsable({ instance }, { args, isStatic }) {
+  setupUsable({ instance, isStatic }, { args }) {
     if (instance.setup) {
       instance.setup(...reifyArgs(args, isStatic));
     }
   }
 
-  updateUsable(bucket, { args, isStatic }) {
+  updateUsable(bucket, { args }) {
     let { instance } = bucket;
 
     if (instance.update) {
-      instance.update(...reifyArgs(args, isStatic));
+      instance.update(...reifyArgs(args, bucket.isStatic));
     } else {
       this.teardownUsable(bucket);
       bucket.instance = this.createResource(bucket).instance;
-      this.setupResource(bucket, { args, isStatic });
+      this.setupResource(bucket, { args });
     }
   }
 
@@ -69,10 +71,15 @@ class ResourceManager {
   }
 }
 
-const createResourceManager = owner => new ResourceManager(owner);
+const MANAGED_RESOURCE = {};
+setUsableManager(MANAGED_RESOURCE, owner => new ResourceManager(owner));
 
 export function resource(Resource) {
-  setUsableManager(Resource, createResourceManager);
+  return (...args) => {
+    let definition = Object.create(MANAGED_RESOURCE);
+    definition.Resource = Resource;
+    definition.args = args;
 
-  return (...args) => ({ usable: Resource, args });
+    return definition;
+  }
 }

@@ -1,3 +1,3 @@
-export { use } from './-private/use';
+export { use, setUsableManager } from './-private/use';
 export { resource } from './-private/resource';
 export { effect } from './-private/effect';

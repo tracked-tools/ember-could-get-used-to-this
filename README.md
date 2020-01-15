@@ -1,4 +1,4 @@
-ember-resource
+ember-usable
 ==============================================================================
 
 [Short description of the addon.]
@@ -16,7 +16,7 @@ Installation
 ------------------------------------------------------------------------------
 
 ```
-ember install ember-resource
+ember install ember-usable
 ```
 
 
