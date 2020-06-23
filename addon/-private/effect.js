@@ -22,7 +22,7 @@ if (DEBUG) {
     shouldAssert = true;
 
     try {
-      fn();
+      return fn();
     } finally {
       shouldAssert = false;
     }
