@@ -4,6 +4,9 @@
   <button type="button" {{on "click" this.toggleShowCount}}>
     Show Count
   </button>
+  <button type="button" {{on "click" this.toggleEffectDemo}}>
+    {{if this.runEffectDemo 'Stop' 'Start'}} effect demo
+  </button>
 </div>
 
 <div>
@@ -19,4 +22,10 @@
 
 <div>
   <TaskDemo @url={{this.interval}}/>
+</div>
+
+<div>
+  {{#if this.runEffectDemo}}
+    <UseEffectDemo />
+  {{/if}}
 </div>
