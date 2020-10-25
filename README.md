@@ -1,8 +1,16 @@
-ember-resource
+ember-could-get-used-to-this
 ==============================================================================
 
-[Short description of the addon.]
+![I Could Get Used To This](https://media.giphy.com/media/Q5LcPLQxjB1ZOm7Ozs/giphy.gif)
 
+Ember Could Get Used To This is an opinionated take on the future direction of
+non-component template constructs in Ember. See [this blog post](https://www.pzuraq.com/introducing-use/)
+for more details!
+
+Documentation
+------------------------------------------------------------------------------
+
+TODO
 
 Compatibility
 ------------------------------------------------------------------------------
@@ -16,7 +24,7 @@ Installation
 ------------------------------------------------------------------------------
 
 ```
-ember install ember-resource
+ember install ember-could-get-used-to-this
 ```
 
 
