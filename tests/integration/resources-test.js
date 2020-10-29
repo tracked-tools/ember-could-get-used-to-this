@@ -98,9 +98,7 @@ module('resources', (hooks) => {
 
     this.text = 'hello';
 
-    await render(
-      hbs`{{#if this.show}}{{test-resource this.text}}{{/if}}`
-    );
+    await render(hbs`{{#if this.show}}{{test-resource this.text}}{{/if}}`);
 
     assert.equal(this.element.textContent.trim(), '');
     assert.equal(active, 0, 'no active resources yet');
@@ -203,7 +201,7 @@ module('resources', (hooks) => {
     assert.equal(resources.size, 1, 'same resource class used to update');
   });
 
-  test('class modifiers can inject services', async function (assert) {
+  test('resources can inject services', async function (assert) {
     let serviceInstance;
 
     this.owner.register(
@@ -214,9 +212,9 @@ module('resources', (hooks) => {
           serviceInstance = this;
         }
 
-        @tracked text = 'hello';;
+        @tracked text = 'hello';
       }
-    )
+    );
 
     this.owner.register(
       'helper:test-resource',
@@ -239,5 +237,49 @@ module('resources', (hooks) => {
     await settled();
 
     assert.equal(this.element.textContent.trim(), 'world');
+  });
+
+  test('value and lifecycle hooks are not entangled', async function (assert) {
+    let resolve;
+
+    class LoadData extends Resource {
+      @tracked isLoading = true;
+
+      get value() {
+        return {
+          isLoading: this.isLoading,
+        };
+      }
+
+      setup() {
+        assert.step('setup');
+        this.loadData();
+      }
+
+      async loadData() {
+        await new Promise((r) => {
+          resolve = r;
+        });
+
+        this.isLoading = false;
+      }
+    }
+
+    this.owner.register('helper:load-data', LoadData);
+
+    await render(hbs`
+      {{#let (load-data) as |data|}}
+        {{data.isLoading}}
+      {{/let}}
+    `)
+
+    assert.equal(this.element.textContent.trim(), 'true', 'correct value returned');
+    assert.verifySteps(['setup'], 'setup was run');
+
+    resolve();
+    await settled();
+
+    assert.equal(this.element.textContent.trim(), 'false', 'correct value returned');
+    assert.verifySteps([], 'setup was not run again');
   });
 });
