@@ -26,6 +26,23 @@ module.exports = {
       ],
     },
 
+    // Tests
+    {
+      files: ['tests/**/*.{ts,js}'],
+      rules: {
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+      },
+    },
+
+    // Types
+    {
+      files: ['types/**/*.d.ts'],
+      rules: {
+        '@typescript-eslint/ban-types': 'off',
+      },
+    },
+
     // node files
     {
       files: [

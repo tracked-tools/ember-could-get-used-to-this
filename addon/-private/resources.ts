@@ -20,6 +20,7 @@ export class Resource {
     this.args = args;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setup() {}
 }
 

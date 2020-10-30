@@ -54,6 +54,7 @@ export class Modifier {
     this.args = args;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setup() {}
 }
 
