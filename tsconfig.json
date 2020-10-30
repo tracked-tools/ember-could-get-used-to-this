@@ -42,8 +42,11 @@
       ],
       "*": [
         "types/*"
-      ]
-    }
+      ],
+    },
+    // Prevents the inclusion of `@types/node`.
+    // https://github.com/microsoft/TypeScript/issues/18588#issuecomment-704482601
+    "types": []
   },
   "include": [
     "app/**/*",
