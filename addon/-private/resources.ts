@@ -34,12 +34,12 @@ class ResourceManager {
   }
 
   createHelper(Class, args) {
-    let { update, teardown } = Class.prototype;
+    const { update, teardown } = Class.prototype;
 
-    let hasUpdate = typeof update === 'function';
-    let hasTeardown = typeof teardown === 'function';
+    const hasUpdate = typeof update === 'function';
+    const hasTeardown = typeof teardown === 'function';
 
-    let owner = this.owner;
+    const owner = this.owner;
 
     let instance;
     let cache;
@@ -70,7 +70,7 @@ class ResourceManager {
   }
 
   getValue(cache) {
-    let instance = getValue(cache);
+    const instance = getValue(cache);
 
     return instance.value;
   }
@@ -85,7 +85,7 @@ class ResourceManager {
 }
 
 function setupInstance(cache, Class, owner, args, hasTeardown) {
-  let instance = new Class(owner, args);
+  const instance = new Class(owner, args);
   associateDestroyableChild(cache, instance);
   instance.setup();
 

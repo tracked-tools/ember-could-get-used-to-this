@@ -23,7 +23,7 @@ class FunctionalModifierManager {
   }
 
   setupModifier(state) {
-    let { fn, args, element } = state;
+    const { fn, args, element } = state;
 
     state.destructor = fn(element, args.positional, args.named);
   }
@@ -65,7 +65,7 @@ class ClassModifierManager {
   }
 
   createModifier(Class, args) {
-    let instance = new Class(this.owner, args);
+    const instance = new Class(this.owner, args);
 
     return {
       Class,
@@ -86,7 +86,7 @@ class ClassModifierManager {
     } else {
       this.destroyModifier(state);
 
-      let { Class, args } = state;
+      const { Class, args } = state;
 
       state.instance = new Class(this.owner, args);
 

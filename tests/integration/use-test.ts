@@ -17,7 +17,7 @@ module('@use', () => {
       @use test = new TestResource(() => ['hello']);
     }
 
-    let instance = new MyClass();
+    const instance = new MyClass();
 
     assert.equal(instance.test, 'hello');
   });
@@ -37,7 +37,7 @@ module('@use', () => {
       @use test = new TestResource(() => [this.text]);
     }
 
-    let instance = new MyClass();
+    const instance = new MyClass();
 
     assert.equal(instance.test, 'hello');
 

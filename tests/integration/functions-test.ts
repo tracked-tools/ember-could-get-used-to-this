@@ -75,7 +75,7 @@ module('Integration | functions', (hooks) => {
   });
 
   test('functional helpers throw an error if passed hash args', async function (assert) {
-    let add = (a, b) => a + b;
+    const add = (a, b) => a + b;
     this.owner.register('helper:add', add);
 
     setupOnerror((e) => {
