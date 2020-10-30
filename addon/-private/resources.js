@@ -4,7 +4,11 @@ import {
 } from '@ember/helper';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import { setOwner } from '@ember/application';
-import { destroy, registerDestructor, associateDestroyableChild } from '@ember/destroyable';
+import {
+  destroy,
+  registerDestructor,
+  associateDestroyableChild,
+} from '@ember/destroyable';
 
 export class Resource {
   constructor(ownerOrThunk, args) {

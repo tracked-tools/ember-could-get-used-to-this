@@ -271,15 +271,23 @@ module('resources', (hooks) => {
       {{#let (load-data) as |data|}}
         {{data.isLoading}}
       {{/let}}
-    `)
+    `);
 
-    assert.equal(this.element.textContent.trim(), 'true', 'correct value returned');
+    assert.equal(
+      this.element.textContent.trim(),
+      'true',
+      'correct value returned'
+    );
     assert.verifySteps(['setup'], 'setup was run');
 
     resolve();
     await settled();
 
-    assert.equal(this.element.textContent.trim(), 'false', 'correct value returned');
+    assert.equal(
+      this.element.textContent.trim(),
+      'false',
+      'correct value returned'
+    );
     assert.verifySteps([], 'setup was not run again');
   });
 });

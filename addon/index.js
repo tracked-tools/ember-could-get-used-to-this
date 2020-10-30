@@ -28,6 +28,6 @@ export function use(prototype, key, desc) {
       }
 
       return getValue(resource);
-    }
-  }
+    },
+  };
 }

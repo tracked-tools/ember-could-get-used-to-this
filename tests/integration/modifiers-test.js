@@ -305,9 +305,9 @@ module('class modifiers', (hooks) => {
           serviceInstance = this;
         }
 
-        @tracked text = 'hello';;
+        @tracked text = 'hello';
       }
-    )
+    );
 
     this.owner.register(
       'modifier:set-text',

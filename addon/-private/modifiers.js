@@ -6,7 +6,7 @@ import { destroy, registerDestructor } from '@ember/destroyable';
 import { setOwner } from '@ember/application';
 
 class FunctionalModifierManager {
-  capabilities = modifierCapabilities("3.22");
+  capabilities = modifierCapabilities('3.22');
 
   createModifier(fn, args) {
     return { fn, args, element: undefined, destructor: undefined };
@@ -58,7 +58,7 @@ export class Modifier {
 }
 
 class ClassModifierManager {
-  capabilities = modifierCapabilities("3.22");
+  capabilities = modifierCapabilities('3.22');
 
   constructor(owner) {
     this.owner = owner;

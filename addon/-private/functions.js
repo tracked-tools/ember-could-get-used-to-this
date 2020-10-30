@@ -15,7 +15,9 @@ class FunctionalHelperManager {
 
   getValue({ fn, args }) {
     assert(
-      `Functional helpers cannot receive hash parameters. \`${this.getDebugName(fn)}\` received ${Object.keys(args.named)}`,
+      `Functional helpers cannot receive hash parameters. \`${this.getDebugName(
+        fn
+      )}\` received ${Object.keys(args.named)}`,
       Object.keys(args.named).length === 0
     );
 
