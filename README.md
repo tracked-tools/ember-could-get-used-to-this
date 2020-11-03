@@ -1,7 +1,7 @@
 ember-could-get-used-to-this
 ==============================================================================
 
-![I Could Get Used To This](https://media.giphy.com/media/Q5LcPLQxjB1ZOm7Ozs/giphy.gif)
+![I Could Get Used To This](https://i.giphy.com/media/Q5LcPLQxjB1ZOm7Ozs/giphy.webp)
 
 Ember Could Get Used To This is an opinionated take on the future direction of
 non-component template constructs in Ember. See [this blog post](https://www.pzuraq.com/introducing-use/)
