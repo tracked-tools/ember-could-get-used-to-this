@@ -7,7 +7,7 @@ import { tracked } from 'tracked-built-ins';
 module('Integration | functions', (hooks) => {
   setupRenderingTest(hooks);
 
-  test('functions can be used as helpers', async function(assert) {
+  test('functions can be used as helpers', async function (assert) {
     this.owner.register('helper:add', (a, b) => a + b);
 
     await render(hbs`{{add 1 2}}`);
@@ -15,7 +15,7 @@ module('Integration | functions', (hooks) => {
     assert.equal(this.element.textContent.trim(), '3');
   });
 
-  test('functional helpers update if args update', async function(assert) {
+  test('functional helpers update if args update', async function (assert) {
     this.owner.register('helper:add', (a, b) => a + b);
 
     this.first = 1;
@@ -33,7 +33,7 @@ module('Integration | functions', (hooks) => {
     assert.equal(this.element.textContent.trim(), '5');
   });
 
-  test('functional helpers update if tracked state used within updates', async function(assert) {
+  test('functional helpers update if tracked state used within updates', async function (assert) {
     this.owner.register('helper:add', ({ a, b }) => a + b);
 
     this.value = tracked({ a: 1, b: 2 });
@@ -50,7 +50,7 @@ module('Integration | functions', (hooks) => {
     assert.equal(this.element.textContent.trim(), '5');
   });
 
-  test('functional helpers cache correctly', async function(assert) {
+  test('functional helpers cache correctly', async function (assert) {
     let count = 0;
     this.owner.register('helper:count', () => ++count);
 
@@ -74,12 +74,15 @@ module('Integration | functions', (hooks) => {
     assert.equal(count, 2, 'cached value updated');
   });
 
-  test('functional helpers throw an error if passed hash args', async function(assert) {
-    let add = (a, b) => a + b;
+  test('functional helpers throw an error if passed hash args', async function (assert) {
+    const add = (a, b) => a + b;
     this.owner.register('helper:add', add);
 
     setupOnerror((e) => {
-      assert.equal(e.message, 'Assertion Failed: Functional helpers cannot receive hash parameters. `add` received first,second');
+      assert.equal(
+        e.message,
+        'Assertion Failed: Functional helpers cannot receive hash parameters. `add` received first,second'
+      );
     });
 
     await render(hbs`{{add first=1 second=2}}`);

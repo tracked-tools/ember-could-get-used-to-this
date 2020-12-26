@@ -101,7 +101,7 @@ module('functional modifiers', (hooks) => {
   });
 
   test('functional modifiers can be passed named args', async function (assert) {
-    let setText = modifier(
+    const setText = modifier(
       (element, positional, { text }) => (element.innerText = text)
     );
     this.owner.register('modifier:set-text', setText);
@@ -222,7 +222,7 @@ module('class modifiers', (hooks) => {
   });
 
   test('class modifiers are destroyed and recreated after each change if no update is present', async function (assert) {
-    let modifiers = new Set();
+    const modifiers = new Set();
 
     this.owner.register(
       'modifier:set-text',
@@ -264,7 +264,7 @@ module('class modifiers', (hooks) => {
   });
 
   test('class modifiers can define an update hook', async function (assert) {
-    let modifiers = new Set();
+    const modifiers = new Set();
 
     this.owner.register(
       'modifier:set-text',
@@ -300,14 +300,14 @@ module('class modifiers', (hooks) => {
     this.owner.register(
       'service:text',
       class extends Service {
-        constructor() {
-          super(...arguments);
+        constructor(...args) {
+          super(...args);
           serviceInstance = this;
         }
 
-        @tracked text = 'hello';;
+        @tracked text = 'hello';
       }
-    )
+    );
 
     this.owner.register(
       'modifier:set-text',

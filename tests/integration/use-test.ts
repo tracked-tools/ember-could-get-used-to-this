@@ -14,10 +14,10 @@ module('@use', () => {
     }
 
     class MyClass {
-      @use test = new TestResource(() => ['hello'])
+      @use test = new TestResource(() => ['hello']);
     }
 
-    let instance = new MyClass();
+    const instance = new MyClass();
 
     assert.equal(instance.test, 'hello');
   });
@@ -32,12 +32,12 @@ module('@use', () => {
     }
 
     class MyClass {
-      @tracked text = 'hello'
+      @tracked text = 'hello';
 
-      @use test = new TestResource(() => [this.text])
+      @use test = new TestResource(() => [this.text]);
     }
 
-    let instance = new MyClass();
+    const instance = new MyClass();
 
     assert.equal(instance.test, 'hello');
 

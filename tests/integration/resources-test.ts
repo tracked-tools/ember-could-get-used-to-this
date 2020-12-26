@@ -123,7 +123,7 @@ module('resources', (hooks) => {
   });
 
   test('resources are destroyed and recreated after each change if no update is present', async function (assert) {
-    let resources = new Set();
+    const resources = new Set();
 
     this.owner.register(
       'helper:test-resource',
@@ -169,7 +169,7 @@ module('resources', (hooks) => {
   });
 
   test('resources can define an update hook', async function (assert) {
-    let resources = new Set();
+    const resources = new Set();
 
     this.owner.register(
       'helper:test-resource',
@@ -207,8 +207,8 @@ module('resources', (hooks) => {
     this.owner.register(
       'service:text',
       class extends Service {
-        constructor() {
-          super(...arguments);
+        constructor(...args) {
+          super(...args);
           serviceInstance = this;
         }
 
@@ -271,15 +271,23 @@ module('resources', (hooks) => {
       {{#let (load-data) as |data|}}
         {{data.isLoading}}
       {{/let}}
-    `)
+    `);
 
-    assert.equal(this.element.textContent.trim(), 'true', 'correct value returned');
+    assert.equal(
+      this.element.textContent.trim(),
+      'true',
+      'correct value returned'
+    );
     assert.verifySteps(['setup'], 'setup was run');
 
     resolve();
     await settled();
 
-    assert.equal(this.element.textContent.trim(), 'false', 'correct value returned');
+    assert.equal(
+      this.element.textContent.trim(),
+      'false',
+      'correct value returned'
+    );
     assert.verifySteps([], 'setup was not run again');
   });
 });
