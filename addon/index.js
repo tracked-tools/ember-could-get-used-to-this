@@ -20,6 +20,8 @@ export function use(prototype, key, desc) {
 
           if (Array.isArray(reified)) {
             return { positional: reified };
+          } else if (!('named' in reified)) {
+            return { named: reified };
           }
 
           return reified;
