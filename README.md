@@ -158,6 +158,49 @@ If you provide an `update` function in your resource, this will be called every 
 You can also provide named arguments to a resource, which are available via `this.args.named`.
 
 
+## Usage with TypeScript
+
+There is a helper function that can be imported to give a hint to TypeScript
+that the value of a Resource is different from the instance of a Resource.
+
+```ts
+import Component from '@glimmer/component';
+import { use, valueFor } from 'ember-could-get-used-to-this';
+import Counter from 'my-app/helpers/counter';
+
+interface Args {
+  interval: number;
+}
+
+export default class CounterWrapper extends Component<Args> {
+  // count is of type `number`
+  @use count = valueFor(new Counter(() => [this.args.interval]));
+}
+```
+
+The Resource definition itself has a generic type argument similar to Modifiers:
+
+```ts
+interface Args {
+  positional: [number];
+}
+
+class Counter extends Resource<Args> {
+  @tracked count = 0;
+  // ...
+}
+```
+
+But by contrast to Modifiers, the default Args type for a Resource is
+```ts
+export type LazyTrackedArgs = {
+  positional?: Array<unknown>;
+  named?: Record<string, unknown>;
+};
+```
+due to the differing ways a Resource can be passed args.
+
+
 Contributing
 ------------------------------------------------------------------------------
 
