@@ -14,6 +14,10 @@ export class Resource<Args extends LazyTrackedArgs> {
   constructor(fn: ConstructorFn<Args>);
 
   get value(): unknown;
+
+  setup?(): void;
+  update?(): void;
+  teardown?(): void;
 }
 
 /**

@@ -1,6 +1,8 @@
 # unconventional js
 /blueprints/*/files/
 /vendor/
+# Until TS Linting is set up
+/index.d.ts
 
 # compiled output
 /dist/
