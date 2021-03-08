@@ -3,7 +3,7 @@ export type LazyTrackedArgs = {
   named?: Record<string, unknown>;
 };
 
-type ConstructorFn<Args extends LazyTrackedArgs> = (() => Args) | (() => Args['positional']);
+type ConstructorFn<Args extends LazyTrackedArgs> = (() => Args) | (() => Args['positional']) | (() => Args['named']);
 
 export const use: PropertyDecorator;
 export class Resource<Args extends LazyTrackedArgs> {
