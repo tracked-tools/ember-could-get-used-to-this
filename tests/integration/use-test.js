@@ -1,9 +1,15 @@
 import { module, test } from 'qunit';
 import { tracked } from 'tracked-built-ins';
+import { action, get as consumeTag } from '@ember/object';
+import { settled } from '@ember/test-helpers';
+import { waitFor } from '@ember/test-waiters';
+import { setupTest } from 'ember-qunit';
 
 import { use, Resource } from 'ember-could-get-used-to-this';
 
-module('@use', () => {
+module('@use', function(hooks)  {
+  setupTest(hooks);
+
   test('it works', async function (assert) {
     class TestResource extends Resource {
       @tracked value;
@@ -44,5 +50,80 @@ module('@use', () => {
     instance.text = 'world';
 
     assert.equal(instance.test, 'world');
+  });
+
+  module('async updates', function() {
+    test('it works', async function(assert) {
+      class Invoker extends Resource {
+        @tracked result = Infinity;
+
+        get value() {
+          return this.result;
+        }
+
+        @action
+        @waitFor
+        async invoke() {
+          let { fn, args } = this.args.named;
+
+          await Promise.resolve();
+
+          this.result = await fn(...args);
+        }
+
+        setup() {
+          this.invoke();
+        }
+
+        update() {
+          this.invoke();
+        }
+      }
+
+      class MyClass {
+        @tracked left = 0;
+        @tracked right = 0;
+
+        @use test = new Invoker(() => {
+          return {
+            named: {
+              fn: this.math,
+              args: [this.left, this.right],
+            }
+          }
+        });
+
+        @action
+        @waitFor
+        math(left, right) {
+          return Promise.resolve(left + right);
+        }
+      }
+
+      let instance = new MyClass();
+
+      assert.equal(instance.test, Infinity, 'initial value');
+      await settled();
+
+      assert.equal(instance.test, 0, 'after async functions run');
+
+      instance.left = 1;
+      consumeTag(instance, 'test');
+      await settled();
+
+      assert.equal(instance.test, 1, 'instance.test must be consumed before it will be updated');
+
+      instance.right = 3;
+      consumeTag(instance, 'test');
+      await settled();
+
+      assert.equal(instance.test, 4);
+
+      instance.left = 2;
+      consumeTag(instance, 'test');
+      await settled();
+
+      assert.equal(instance.test, 5);
+    });
   });
 });
