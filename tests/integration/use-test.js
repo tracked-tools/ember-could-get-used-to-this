@@ -1,12 +1,15 @@
 import { module, test } from 'qunit';
 import { tracked } from 'tracked-built-ins';
-import { action } from '@ember/object';
+import { action, get as consumeTag } from '@ember/object';
 import { settled } from '@ember/test-helpers';
 import { waitFor } from '@ember/test-waiters';
+import { setupTest } from 'ember-qunit';
 
 import { use, Resource } from 'ember-could-get-used-to-this';
 
-module('@use', () => {
+module('@use', function(hooks)  {
+  setupTest(hooks);
+
   test('it works', async function (assert) {
     class TestResource extends Resource {
       @tracked value;
@@ -105,16 +108,19 @@ module('@use', () => {
       assert.equal(instance.test, 0, 'after async functions run');
 
       instance.left = 1;
+      consumeTag(instance, 'test');
       await settled();
 
-      assert.equal(instance.test, 1);
+      assert.equal(instance.test, 1, 'instance.test must be consumed before it will be updated');
 
       instance.right = 3;
+      consumeTag(instance, 'test');
       await settled();
 
       assert.equal(instance.test, 4);
 
       instance.left = 2;
+      consumeTag(instance, 'test');
       await settled();
 
       assert.equal(instance.test, 5);
