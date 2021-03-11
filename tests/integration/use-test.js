@@ -6,10 +6,10 @@ import { use, Resource } from 'ember-could-get-used-to-this';
 module('@use', () => {
   test('it works', async function (assert) {
     class TestResource extends Resource {
-      @tracked value;
+      @tracked firstArg;
 
       setup() {
-        this.value = this.args.positional[0];
+        this.firstArg = this.args.positional[0];
       }
     }
 
@@ -19,15 +19,15 @@ module('@use', () => {
 
     let instance = new MyClass();
 
-    assert.equal(instance.test, 'hello');
+    assert.equal(instance.test.firstArg, 'hello');
   });
 
   test('resources update if args update', async function (assert) {
     class TestResource extends Resource {
-      @tracked value;
+      @tracked firstArg;
 
       setup() {
-        this.value = this.args.positional[0];
+        this.firstArg = this.args.positional[0];
       }
     }
 
@@ -39,10 +39,10 @@ module('@use', () => {
 
     let instance = new MyClass();
 
-    assert.equal(instance.test, 'hello');
+    assert.equal(instance.test.firstArg, 'hello');
 
     instance.text = 'world';
 
-    assert.equal(instance.test, 'world');
+    assert.equal(instance.test.firstArg, 'world');
   });
 });

@@ -22,7 +22,11 @@ module('resources', (hooks) => {
       }
     );
 
-    await render(hbs`{{test-resource 'hello'}}`);
+    await render(hbs`
+      {{#let (test-resource 'hello') as |test|}}
+        {{test.value}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
   });
@@ -41,7 +45,11 @@ module('resources', (hooks) => {
 
     this.text = 'hello';
 
-    await render(hbs`{{test-resource this.text}}`);
+    await render(hbs`
+      {{#let (test-resource this.text) as |test|}}
+        {{test.value}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
 
@@ -66,7 +74,11 @@ module('resources', (hooks) => {
 
     this.value = tracked({ text: 'hello' });
 
-    await render(hbs`{{test-resource this.value}}`);
+    await render(hbs`
+      {{#let (test-resource this.value) as |test|}}
+        {{test.value}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
 
@@ -98,7 +110,13 @@ module('resources', (hooks) => {
 
     this.text = 'hello';
 
-    await render(hbs`{{#if this.show}}{{test-resource this.text}}{{/if}}`);
+    await render(hbs`
+      {{#if this.show}}
+        {{#let (test-resource this.text) as |test|}}
+          {{test.value}}
+        {{/let}}
+      {{/if}}
+    `);
 
     assert.equal(this.element.textContent.trim(), '');
     assert.equal(active, 0, 'no active resources yet');
@@ -139,7 +157,11 @@ module('resources', (hooks) => {
 
     this.text = 'hello';
 
-    await render(hbs`{{test-resource this.text}}`);
+    await render(hbs`
+      {{#let (test-resource this.text) as |test|}}
+        {{test.value}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
     assert.equal(resources.size, 1, 'one resource class created');
@@ -163,7 +185,11 @@ module('resources', (hooks) => {
       }
     );
 
-    await render(hbs`{{test-resource text='hello'}}`);
+    await render(hbs`
+      {{#let (test-resource text='hello') as |test|}}
+        {{test.value}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
   });
@@ -189,7 +215,11 @@ module('resources', (hooks) => {
 
     this.text = 'hello';
 
-    await render(hbs`{{test-resource this.text}}`);
+    await render(hbs`
+      {{#let (test-resource this.text) as |test|}}
+        {{test.value}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
     assert.equal(resources.size, 1, 'one resource class created');
@@ -220,16 +250,16 @@ module('resources', (hooks) => {
       'helper:test-resource',
       class extends Resource {
         @service text;
-
-        get value() {
-          return this.text.text;
-        }
       }
     );
 
     this.text = 'hello';
 
-    await render(hbs`{{test-resource this.text}}`);
+    await render(hbs`
+      {{#let (test-resource this.text) as |test|}}
+        {{test.text.text}}
+      {{/let}}
+    `);
 
     assert.equal(this.element.textContent.trim(), 'hello');
 
@@ -244,12 +274,6 @@ module('resources', (hooks) => {
 
     class LoadData extends Resource {
       @tracked isLoading = true;
-
-      get value() {
-        return {
-          isLoading: this.isLoading,
-        };
-      }
 
       setup() {
         assert.step('setup');
