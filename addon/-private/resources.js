@@ -68,7 +68,7 @@ class ResourceManager {
   getValue(cache) {
     let instance = getValue(cache);
 
-    return instance.value;
+    return instance;
   }
 
   getDestroyable(cache) {
