@@ -26,8 +26,8 @@ jobs:
       - name: ESLint
         run: yarn lint:js
 
-      - name: Templates
-        run: yarn lint:hbs
+      # - name: Templates
+      #   run: yarn lint:hbs
 
 
   # docs:
