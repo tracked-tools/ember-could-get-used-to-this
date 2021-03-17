@@ -17,13 +17,14 @@
   },
   "scripts": {
     "build": "ember build",
-    "lint": "eslint .",
+    "lint": "yarn lint:js",
+    "lint:js": "eslint .",
     "start": "ember serve",
     "test": "ember test",
     "test:all": "ember try:each"
   },
   "dependencies": {
-    "ember-cli-babel": "^7.22.1",
+    "ember-cli-babel": "^7.25.0",
     "ember-cli-htmlbars": "^4.2.0"
   },
   "devDependencies": {
@@ -82,5 +83,9 @@
       "release": true,
       "tokenRef": "GITHUB_AUTH"
     }
+  },
+  "volta": {
+    "node": "14.16.0",
+    "yarn": "1.22.10"
   }
 }

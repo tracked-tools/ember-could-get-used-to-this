@@ -20,8 +20,21 @@ module.exports = function(defaults) {
       .compatBuild(app, Webpack, {
         staticAddonTestSupportTrees: true,
         staticAddonTrees: true,
-        staticHelpers: true,
+        // temporarily disabled to allow tests to dynamically register helpers
+        staticHelpers: false,
         staticComponents: true,
+        packageRules: [
+          {
+            // Components used during testing,
+            // these are dynamically registered during the tests
+            package: 'dummy',
+            components: {
+              '{{add}}': { safeToIgnore: true },
+              '{{count}}': { safeToIgnore: true },
+              '{{set-text}}': { safeToIgnore: true },
+            },
+          },
+        ],
       });
   }
 
