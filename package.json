@@ -17,7 +17,8 @@
   },
   "scripts": {
     "build": "ember build",
-    "lint": "eslint .",
+    "lint": "yarn lint:js",
+    "lint:js": "eslint .",
     "start": "ember serve",
     "test": "ember test",
     "test:all": "ember try:each"
