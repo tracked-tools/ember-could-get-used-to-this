@@ -4,19 +4,19 @@ import {
 } from '@ember/helper';
 import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
 import { setOwner } from '@ember/application';
-import { destroy, registerDestructor, associateDestroyableChild } from '@ember/destroyable';
+import { destroy, associateDestroyableChild } from '@ember/destroyable';
 
 export class Resource {
-  constructor(ownerOrThunk, args) {
-    if (typeof ownerOrThunk === 'function') {
-      return { definition: this.constructor, args: ownerOrThunk };
-    }
-
-    setOwner(this, ownerOrThunk);
-    this.args = args;
+  static from(thunk) {
+    return { definition: this, thunk };
   }
 
-  setup() {}
+  constructor(owner, args, previousInstance) {
+    setOwner(this, owner);
+
+    this.args = args;
+    this.previousInstance = previousInstance;
+  }
 }
 
 class ResourceManager {
@@ -30,37 +30,17 @@ class ResourceManager {
   }
 
   createHelper(Class, args) {
-    let { update, teardown } = Class.prototype;
-
-    let hasUpdate = typeof update === 'function';
-    let hasTeardown = typeof teardown === 'function';
-
     let owner = this.owner;
 
     let instance;
-    let cache;
 
-    if (hasUpdate) {
-      cache = createCache(() => {
-        if (instance === undefined) {
-          instance = setupInstance(cache, Class, owner, args, hasTeardown);
-        } else {
-          instance.update();
-        }
+    let cache = createCache(() => {
+      let oldInstance = instance;
 
-        return instance;
-      });
-    } else {
-      cache = createCache(() => {
-        if (instance !== undefined) {
-          destroy(instance);
-        }
+      instance = setupInstance(cache, Class, owner, args, oldInstance);
 
-        instance = setupInstance(cache, Class, owner, args, hasTeardown);
-
-        return instance;
-      });
-    }
+      return instance;
+    });
 
     return cache;
   }
@@ -80,13 +60,13 @@ class ResourceManager {
   }
 }
 
-function setupInstance(cache, Class, owner, args, hasTeardown) {
-  let instance = new Class(owner, args);
-  associateDestroyableChild(cache, instance);
-  instance.setup();
+function setupInstance(cache, Class, owner, args, oldInstance) {
+  let instance = new Class(owner, args, oldInstance);
 
-  if (hasTeardown) {
-    registerDestructor(instance, () => instance.teardown());
+  associateDestroyableChild(cache, instance);
+
+  if (oldInstance !== undefined) {
+    destroy(oldInstance);
   }
 
   return instance;
