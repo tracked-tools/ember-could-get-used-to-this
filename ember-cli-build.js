@@ -22,6 +22,17 @@ module.exports = function(defaults) {
         staticAddonTrees: true,
         staticHelpers: true,
         staticComponents: true,
+        packageRules: [
+          {
+            // Components used during testing,
+            // these are dynamically registered during the tests
+            package: 'dummy',
+            components: {
+              '{{add}}': { safeToIgnore: true },
+              '{{count}}': { safeToIgnore: true },
+            },
+          },
+        ],
       });
   }
 
