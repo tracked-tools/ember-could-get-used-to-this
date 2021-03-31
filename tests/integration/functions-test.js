@@ -2,6 +2,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, settled, setupOnerror } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
+import { gte } from 'ember-compatibility-helpers';
 import { tracked } from 'tracked-built-ins';
 
 module('Integration | functions', (hooks) => {
@@ -84,4 +85,30 @@ module('Integration | functions', (hooks) => {
 
     await render(hbs`{{add first=1 second=2}}`);
   });
+
+  test('functional helpers can receive a helper value', async function(assert) {
+    this.owner.register('helper:add', (numbers) => numbers.reduce((sum, cur) => sum + cur));
+
+    await render(hbs`{{add (array 1 2 3)}}`);
+
+    assert.equal(this.element.textContent.trim(), '6');
+  });
+
+  if (gte('3.25.0')) {
+    test('local functional helpers work', async function(assert) {
+      this.add = (a, b) => a + b;
+
+      await render(hbs`{{this.add 1 2}}`);
+
+      assert.equal(this.element.textContent.trim(), '3');
+    });
+
+    test('local functional helpers can receive a helper value', async function(assert) {
+      this.add = (numbers) => numbers.reduce((sum, cur) => sum + cur);
+
+      await render(hbs`{{this.add (array 1 2 3)}}`);
+
+      assert.equal(this.element.textContent.trim(), '6');
+    });
+  }
 });
