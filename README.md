@@ -155,9 +155,22 @@ export default class CounterWrapper extends Component {
 
 If you provide an `update` function in your resource, this will be called every time an argument changes. Else, the resource will be torn down and re-created each time an argument changes.
 
-You can also provide named arguments to a resource, which are available via `this.args.named`.
+You can also provide named arguments to a resource, which are available via `this.args.named`. To do this, return an object with a `named` key from the initializer function. Here's what the `Counter` usage would look like using named arguments:
 
+```js
+export default class CounterWrapper extends Component {
+  @use count = new Counter(() => ({named: {interval: this.args.interval}}));
+}
+```
+Which can then be accessed in the `Resource` with `this.args.named.interval`.
 
+Positional and named arguments can also be mixed, like so:
+
+```js
+export default class CounterWrapper extends Component {
+  @use count = new Counter(() => ({named: {interval: this.args.interval}, positional: [this.args.otherValue]}));
+}
+```
 Contributing
 ------------------------------------------------------------------------------
 
