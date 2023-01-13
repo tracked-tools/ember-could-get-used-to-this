@@ -29,6 +29,8 @@ Usage
 
 ### Functions
 
+**Good news!** As of Ember 4.5, this feature is now built into Ember, and includes both positional and named arguments. For more details, read the [Plain Old Functions as Helper blog post](https://blog.emberjs.com/plain-old-functions-as-helpers/).
+
 You can export plain functions from inside `app/helpers` and use them as helpers. This only support positional arguments:
 
 ```js
