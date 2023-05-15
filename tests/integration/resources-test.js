@@ -4,6 +4,7 @@ import { render, settled } from '@ember/test-helpers';
 import Service, { inject as service } from '@ember/service';
 import { hbs } from 'ember-cli-htmlbars';
 import { tracked } from 'tracked-built-ins';
+import { registerDestructor } from '@ember/destroyable';
 
 import { Resource } from 'ember-could-get-used-to-this';
 
@@ -14,11 +15,7 @@ module('resources', (hooks) => {
     this.owner.register(
       'helper:test-resource',
       class extends Resource {
-        @tracked value;
-
-        setup() {
-          this.value = this.args.positional[0];
-        }
+        @tracked value = this.args.positional[0];
       }
     );
 
@@ -35,9 +32,9 @@ module('resources', (hooks) => {
     this.owner.register(
       'helper:test-resource',
       class extends Resource {
-        @tracked value;
+        constructor() {
+          super(...arguments);
 
-        setup() {
           this.value = this.args.positional[0];
         }
       }
@@ -64,9 +61,9 @@ module('resources', (hooks) => {
     this.owner.register(
       'helper:test-resource',
       class extends Resource {
-        @tracked value;
+        constructor() {
+          super(...arguments);
 
-        setup() {
           this.value = this.args.positional[0].text;
         }
       }
@@ -97,13 +94,15 @@ module('resources', (hooks) => {
       class extends Resource {
         @tracked value;
 
-        setup() {
+        constructor() {
+          super(...arguments);
+
           active++;
           this.value = this.args.positional[0];
-        }
 
-        teardown() {
-          active--;
+          registerDestructor(this, () => {
+            active --
+          });
         }
       }
     );
@@ -148,7 +147,9 @@ module('resources', (hooks) => {
       class extends Resource {
         @tracked value;
 
-        setup() {
+        constructor() {
+          super(...arguments);
+
           resources.add(this);
           this.value = this.args.positional[0];
         }
@@ -179,7 +180,9 @@ module('resources', (hooks) => {
       class extends Resource {
         @tracked value;
 
-        setup() {
+        constructor() {
+          super(...arguments);
+
           this.value = this.args.named.text;
         }
       }
@@ -194,20 +197,18 @@ module('resources', (hooks) => {
     assert.equal(this.element.textContent.trim(), 'hello');
   });
 
-  test('resources can define an update hook', async function (assert) {
+  test('resources can manage updates', async function (assert) {
     let resources = new Set();
 
     this.owner.register(
       'helper:test-resource',
       class extends Resource {
-        @tracked value;
+        value;
 
-        setup() {
+        constructor() {
+          super(...arguments);
+
           resources.add(this);
-          this.value = this.args.positional[0];
-        }
-
-        update() {
           this.value = this.args.positional[0];
         }
       }
@@ -228,7 +229,7 @@ module('resources', (hooks) => {
     await settled();
 
     assert.equal(this.element.textContent.trim(), 'world');
-    assert.equal(resources.size, 1, 'same resource class used to update');
+    assert.equal(resources.size, 2, 'different resource is used because the args changed');
   });
 
   test('resources can inject services', async function (assert) {
@@ -275,9 +276,11 @@ module('resources', (hooks) => {
     class LoadData extends Resource {
       @tracked isLoading = true;
 
-      setup() {
+      constructor() {
+        super(...arguments);
+
         assert.step('setup');
-        this.loadData();
+        this.loadData()
       }
 
       async loadData() {
