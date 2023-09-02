@@ -3,6 +3,7 @@ import { getValue } from '@glimmer/tracking/primitives/cache';
 
 export { modifier, Modifier } from './-private/modifiers';
 export { Resource } from './-private/resources';
+export { Effect } from './-private/effects';
 
 export function use(prototype, key, desc) {
   let resources = new WeakMap();

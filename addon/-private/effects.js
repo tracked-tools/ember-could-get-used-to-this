@@ -2,14 +2,15 @@ import {
   setHelperManager,
   capabilities as helperCapabilities,
 } from '@ember/helper';
-import { createCache, getValue } from '@glimmer/tracking/primitives/cache';
-import { setOwner } from '@ember/application';
-import { destroy, registerDestructor, associateDestroyableChild } from '@ember/destroyable';
+import {createCache, getValue} from '@glimmer/tracking/primitives/cache';
+import {setOwner} from '@ember/application';
+import {destroy, registerDestructor, associateDestroyableChild, isDestroyed, isDestroying} from '@ember/destroyable';
+import {schedule} from '@ember/runloop';
 
-export class Resource {
+export class Effect {
   constructor(ownerOrThunk, args) {
     if (typeof ownerOrThunk === 'function') {
-      return { definition: this.constructor, args: ownerOrThunk };
+      return {definition: this.constructor, args: ownerOrThunk};
     }
 
     setOwner(this, ownerOrThunk);
@@ -17,12 +18,10 @@ export class Resource {
   }
 
   setup() {}
-  update() {}
   teardown() {}
-
 }
 
-class ResourceManager {
+class EffectManager {
   capabilities = helperCapabilities('3.23', {
     hasValue: true,
     hasDestroyable: true,
@@ -33,7 +32,7 @@ class ResourceManager {
   }
 
   createHelper(Class, args) {
-    let { update, teardown } = Class.prototype;
+    let {update, teardown} = Class.prototype;
 
     let hasUpdate = typeof update === 'function';
     let hasTeardown = typeof teardown === 'function';
@@ -54,15 +53,15 @@ class ResourceManager {
         return instance;
       });
     } else {
-      cache = createCache(() => {
-        if (instance !== undefined) {
-          destroy(instance);
-        }
+      // cache = createCache(() => {
+      //   if (instance !== undefined) {
+      //     destroy(instance);
+      //   }
 
-        instance = setupInstance(cache, Class, owner, args, hasTeardown);
+      //   instance = setupInstance(cache, Class, owner, args, hasTeardown);
 
-        return instance;
-      });
+      //   return instance;
+      // });
     }
 
     return cache;
@@ -71,7 +70,7 @@ class ResourceManager {
   getValue(cache) {
     let instance = getValue(cache);
 
-    return instance;
+    return instance.value;
   }
 
   getDestroyable(cache) {
@@ -81,12 +80,16 @@ class ResourceManager {
   getDebugName(fn) {
     return fn.name || '(anonymous function)';
   }
+
 }
 
 function setupInstance(cache, Class, owner, args, hasTeardown) {
   let instance = new Class(owner, args);
   associateDestroyableChild(cache, instance);
-  instance.setup();
+
+  schedule('afterRender', () => {
+    instance.setup();
+  });
 
   if (hasTeardown) {
     registerDestructor(instance, () => instance.teardown());
@@ -95,4 +98,4 @@ function setupInstance(cache, Class, owner, args, hasTeardown) {
   return instance;
 }
 
-setHelperManager((owner) => new ResourceManager(owner), Resource);
+setHelperManager((owner) => new EffectManager(owner), Effect);
